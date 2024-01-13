@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "none",
+    "noImplicitAny": true,
+    "outFile": "./build/build.js",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "rootDir": "./sketch/",
+    "sourceMap": true,
+    "target": "ES6",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost"
+    ]
+  }
+}
