@@ -2,7 +2,7 @@ class GameState {
     grid: Record<number, Record<number, TileState>>;
     stacks: Tile[][];
     riverStack: Tile[];
-    previouslyPlacedTile: TileState;
+    previouslyPlacedTile?: TileState;
     done: boolean;
 
     constructor(stacks: Tile[][], riverStack: Tile[]) {

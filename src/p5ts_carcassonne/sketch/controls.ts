@@ -1,7 +1,7 @@
 class Controls {
 
     view = {x: 0, y: 0, zoom: 1};
-    viewPos = { prevX: null as number,  prevY: null as number,  isDragging: false };
+    viewPos: { prevY?: number; prevX?: number; isDragging: boolean } = { prevX: undefined,  prevY: undefined, isDragging: false };
 
     move() {
         const controls = this;
@@ -16,8 +16,8 @@ class Controls {
             if(!isDragging) return;
 
             const pos = {x: e.clientX, y: e.clientY};
-            const dx = pos.x - prevX;
-            const dy = pos.y - prevY;
+            const dx = pos.x - prevX!;
+            const dy = pos.y - prevY!;
 
             if(prevX || prevY) {
                 controls.view.x += dx;
@@ -27,10 +27,10 @@ class Controls {
             }
         }
 
-        function mouseReleased(e: MouseEvent) {
+        function mouseReleased(_: MouseEvent) {
             controls.viewPos.isDragging = false;
-            controls.viewPos.prevX = null;
-            controls.viewPos.prevY = null;
+            controls.viewPos.prevX = undefined;
+            controls.viewPos.prevY = undefined;
         }
 
         return {

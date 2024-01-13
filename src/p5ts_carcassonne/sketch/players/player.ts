@@ -62,11 +62,11 @@ abstract class Player {
             .some(i => this.tileMatchesLookingAt(tile, x, y, orientation, (i + 4 - orientation) % 4, gameState, false));
 
         const curve = isCurve(tile);
-        const previousCurve = isCurve(gameState.previouslyPlacedTile.tile);
+        const previousCurve = isCurve(gameState.previouslyPlacedTile!.tile);
 
         const curveAllowed = !curve.isCurve || !previousCurve.isCurve
             || intersect(curve.edgeIndices.map(i => (i + 4 - orientation) % 4),
-                previousCurve.edgeIndices.map(i => (i + 4 - gameState.previouslyPlacedTile.orientation) % 4))
+                previousCurve.edgeIndices.map(i => (i + 4 - gameState.previouslyPlacedTile!.orientation) % 4))
                 .length == 0;
 
         return nextToRiver && curveAllowed;

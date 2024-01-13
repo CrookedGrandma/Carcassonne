@@ -10,6 +10,10 @@ interface ReferenceValues {
     euclidean?: MinMax;
 }
 
+function emptyMinMax(): MinMax {
+    return { min: Number.MAX_VALUE, max: Number.MIN_VALUE };
+}
+
 class SatisfactionPlayer extends Player {
     protected pick(tile: Tile, positions: PosAndOri[], gameState: GameState): PosAndOri {
         const reference = this.computeReferenceValues(positions, gameState);
@@ -74,11 +78,11 @@ class SatisfactionPlayer extends Player {
     }
 
     private manhattanDistanceFromCenter(position: PosAndOri, reference: ReferenceValues) {
-        return this._distanceFromCenter(position, reference.manhattan, manhattanDistance);
+        return this._distanceFromCenter(position, reference.manhattan ?? emptyMinMax(), manhattanDistance);
     }
 
     private euclideanDistanceFromCenter(position: PosAndOri, reference: ReferenceValues) {
-        return this._distanceFromCenter(position, reference.euclidean, euclideanDistance);
+        return this._distanceFromCenter(position, reference.euclidean ?? emptyMinMax(), euclideanDistance);
     }
 
     private _distanceFromCenter(position: PosAndOri, reference: MinMax, distanceFn: (pos: Position) => number): number {

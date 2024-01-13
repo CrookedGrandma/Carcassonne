@@ -16,7 +16,7 @@ class Game {
 
     private gameState: GameState;
 
-    private player: Player;
+    private player?: Player;
 
     constructor(csvLines: string[], playsPerSecond = 5, numberOfStacks: number = 5, useRiver: boolean = false, stackMultiplier: number = 1) {
         this.NO_STACKS = numberOfStacks;
@@ -32,7 +32,10 @@ class Game {
             : [];
 
         this.gameTiles = shuffle(Array(stackMultiplier).fill(this.basicTiles).flat());
-        this.startTile = this.allTiles.find(t => t.startTile && t.river == this.usingRiver);
+        const startTile = this.allTiles.find(t => t.startTile && t.river == this.usingRiver);
+        if (!startTile)
+            throw Error("no suitable start tile found");
+        this.startTile = startTile;
 
         this.gameState = new GameState(chunkIntoN(this.gameTiles, this.NO_STACKS), this.riverTiles);
 
@@ -58,6 +61,8 @@ class Game {
 
     playRound() {
         const game = this;
+        if (!game.player)
+            throw Error("no player");
         game.gameState = game.player.play(game.gameState);
         if (!game.gameState.done)
             setTimeout(() => game.playRound(), game.PLAY_DELAY);
@@ -86,7 +91,7 @@ class Game {
     private tileImage(x: number, y: number): p5.Image;
     private tileImage(xOrTile: Tile | TileDescriptor | number, y?: number) {
         if (Number.isFinite(xOrTile) && Number.isFinite(y)) {
-            return this.tileImage(this.gameState.grid[y][xOrTile as number].tile);
+            return this.tileImage(this.gameState.grid[y!][xOrTile as number].tile);
         }
         else {
             return this.tileImages[(xOrTile as Tile | TileDescriptor).imageName];
