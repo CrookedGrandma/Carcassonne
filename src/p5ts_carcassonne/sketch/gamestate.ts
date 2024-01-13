@@ -3,6 +3,7 @@ class GameState {
     stacks: Tile[][];
     riverStack: Tile[];
     previouslyPlacedTile?: TileState;
+    temporaryTile?: TileState;
     done: boolean;
 
     constructor(stacks: Tile[][], riverStack: Tile[]) {
@@ -13,6 +14,11 @@ class GameState {
     }
 
     tileAt(x: number, y: number): TileState | undefined {
+        if (this.temporaryTile?.position.x == x && this.temporaryTile?.position.y == y) {
+            const tempTile = this.temporaryTile;
+            this.temporaryTile = undefined;
+            return tempTile;
+        }
         if (!this.grid[y])
             return undefined;
         return this.grid[y][x];
@@ -45,5 +51,10 @@ class GameState {
 
     tilesLeft(): number {
         return sum(this.stacks.map(s => s.length));
+    }
+
+    withTemporaryTile(tile: Tile, position: PosAndOri): GameState {
+        this.temporaryTile = { tile, position: position.position, orientation: position.orientation };
+        return this;
     }
 }

@@ -14,7 +14,7 @@ function setup() {
     Math.seedrandom('toyota aygo!');
     game = new Game(csvLines, 100, 5, true, 10).useSatisfactionPlayer().start();
 
-    const canvas = createCanvas(windowWidth, windowHeight)
+    const canvas = createCanvas(windowWidth, windowHeight);
 
     controls = new Controls();
     canvas.mouseWheel(e => controls.zoom().worldZoom(e));

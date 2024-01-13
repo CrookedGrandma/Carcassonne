@@ -14,15 +14,13 @@ interface Position {
 }
 
 interface PosAndOri {
-    position: Position,
-    orientation: Orientation,
+    position: Position;
+    orientation: Orientation;
 }
 
 type TileState = {
     tile: Tile;
-    orientation: Orientation;
-    position: Position;
-}
+} & PosAndOri;
 
 interface MinMax {
     min: number;

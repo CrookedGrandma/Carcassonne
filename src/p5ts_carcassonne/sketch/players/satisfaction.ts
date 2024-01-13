@@ -3,6 +3,7 @@ const weightMap  = {
     manhattanDistanceFromCenter: 0.5,
     euclideanDistanceFromCenter: 0.5,
     isRightSideUp: 0.01,
+    leavesNoImpossibleGaps: 1,
 };
 
 interface ReferenceValues {
@@ -19,7 +20,7 @@ class SatisfactionPlayer extends Player {
         const reference = this.computeReferenceValues(positions, gameState);
         const scores = positions.map(pao => ({
             position: pao,
-            satisfaction: this.satisfaction(tile, pao, gameState, reference)
+            satisfaction: this.satisfaction(tile, pao, gameState, reference),
         }));
         const bestScore = maxBy(scores.map(s => s.satisfaction), s => s);
         const bestPositions = scores.filter(s => s.satisfaction == bestScore);
@@ -65,6 +66,8 @@ class SatisfactionPlayer extends Player {
             score += weightMap.euclideanDistanceFromCenter * this.euclideanDistanceFromCenter(position, reference);
         if (weightMap.isRightSideUp)
             score += weightMap.isRightSideUp * this.isRightSideUp(position);
+        if (weightMap.leavesNoImpossibleGaps)
+            score += weightMap.leavesNoImpossibleGaps * this.leavesNoImpossibleGaps(tile, position, gameState);
         return score;
     }
 
@@ -107,7 +110,20 @@ class SatisfactionPlayer extends Player {
         return position.orientation == Orientation.Deg0 ? 100 : 0;
     }
 
-    //TODO: add rule for not leaving impossible to fill gaps
+    private leavesNoImpossibleGaps(tile: Tile, position: PosAndOri, gameState: GameState) {
+        for (const neighbour of fourAround(position.position)) {
+            if (gameState.tileAt(neighbour.x, neighbour.y))
+                continue;
+            const edgesAround = getNeighbouringEdges(neighbour, gameState.withTemporaryTile(tile, position));
+            if (edgesAround.filter(e => !e).length > 0)
+                continue;
+            const roads = edgesAround.filter(e => e == EdgeType.Road).length;
+            const cities = edgesAround.filter(e => e == EdgeType.City).length;
+            if (roads == 1 && cities > 0 && cities < 3)
+                return 0;
+        }
+        return 100;
+    }
 
     //TODO: add rule for completing projects
 }

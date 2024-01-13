@@ -100,3 +100,42 @@ function manhattanDistance(pos: Position) {
 function euclideanDistance(pos: Position) {
     return Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 }
+
+function fourAround(pos: Position): Position[] {
+    return [
+        { x: pos.x, y: pos.y - 1 },
+        { x: pos.x + 1, y: pos.y },
+        { x: pos.x, y: pos.y + 1 },
+        { x: pos.x - 1, y: pos.y },
+    ];
+}
+
+function eightAround(pos: Position): Position[] {
+    return [
+        { x: pos.x, y: pos.y - 1 },
+        { x: pos.x + 1, y: pos.y - 1 },
+        { x: pos.x + 1, y: pos.y },
+        { x: pos.x + 1, y: pos.y + 1 },
+        { x: pos.x, y: pos.y + 1 },
+        { x: pos.x - 1, y: pos.y + 1 },
+        { x: pos.x - 1, y: pos.y },
+        { x: pos.x - 1, y: pos.y - 1 },
+    ];
+}
+
+function getNeighbouringTiles(pos: Position, gameState: GameState, get8: boolean = false): (TileState | undefined)[] {
+    const ns = get8 ? eightAround(pos) : fourAround(pos);
+    return ns.map(n => gameState.tileAt(n.x, n.y));
+}
+
+function getEdgeType(tile: TileState, side: Side): EdgeType {
+    return tile.tile.edges[(side + tile.orientation) % 4] as EdgeType;
+}
+
+function getNeighbouringEdges(pos: Position, gameState: GameState): (EdgeType | undefined)[] {
+    const ns = getNeighbouringTiles(pos, gameState);
+    return [0, 1, 2, 3].map(i => {
+        const n = ns[i];
+        return n ? getEdgeType(n, (i + 2) % 4) : undefined;
+    });
+}
