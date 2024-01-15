@@ -12,7 +12,7 @@ function setup() {
     console.log("🚀 - Setup initialized - P5 is running");
 
     Math.seedrandom('toyota aygo!');
-    game = new Game(csvLines, 100, 5, true, 10).useSatisfactionPlayer().start();
+    game = new Game(csvLines, 100, 5, true, 1).useSatisfactionPlayer().useDebug().start();
 
     const canvas = createCanvas(windowWidth, windowHeight);
 
@@ -36,9 +36,13 @@ function draw() {
 
     game.drawUi();
 
+    push();
     translate(controls.view.x, controls.view.y);
-    scale(controls.view.zoom)
+    scale(controls.view.zoom);
     game.draw();
+    pop();
+
+    game.drawPostGame();
 }
 
 window.mousePressed = e => controls.move().mousePressed(e as MouseEvent);

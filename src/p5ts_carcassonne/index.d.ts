@@ -4,6 +4,7 @@ interface Tile {
     river: boolean;
     startTile: boolean;
     riverEnd: boolean;
+    connections: Record<EdgeType, Side[][]>
 }
 
 type TileDescriptor = Tile & { count: number }

@@ -1,5 +1,5 @@
 class Game {
-    private readonly TILE_SIZE = 105;
+    readonly TILE_SIZE = 105;
 
     private readonly NO_STACKS: number;
     private readonly PLAY_DELAY: number;
@@ -17,12 +17,13 @@ class Game {
     private gameState: GameState;
 
     private player?: Player;
+    private usingDebug: boolean = false;
 
     constructor(csvLines: string[], playsPerSecond = 5, numberOfStacks: number = 5, useRiver: boolean = false, stackMultiplier: number = 1) {
         this.NO_STACKS = numberOfStacks;
         this.PLAY_DELAY = 1000 / playsPerSecond;
         this.usingRiver = useRiver;
-        this.tileDescriptors = csvLinesToDescriptorArray(csvLines).slice(1);
+        this.tileDescriptors = csvLinesToDescriptorArray(csvLines.slice(1));
         this.tileImages = Object.fromEntries(this.tileDescriptors.map(d => [d.imageName, loadImage(imageFolder + d.imageName)]));
         this.allTiles = descriptorArrayToTileArray(this.tileDescriptors);
         this.basicTiles = this.allTiles.filter(t => !t.startTile && !t.river);
@@ -53,6 +54,11 @@ class Game {
         return this;
     }
 
+    useDebug() {
+        this.usingDebug = true;
+        return this;
+    }
+
     start() {
         const game = this;
         setTimeout(() => game.playRound(), this.PLAY_DELAY);
@@ -76,6 +82,11 @@ class Game {
         this.drawGrid();
     }
 
+    drawPostGame() {
+        if (this.usingDebug)
+            this.drawDebug();
+    }
+
     private drawStacks() {
         for (const [i, stack] of this.gameState.stacks.entries()) {
             const x = 5 * (i + 1) + 30 * i;
@@ -85,6 +96,37 @@ class Game {
             fill(255);
             text(stack.length, x, 30);
         }
+    }
+
+    private drawDebug() {
+        function adjustX(input: number, mult: number = 1) {
+            return input * controls.view.zoom + controls.view.x * mult;
+        }
+        function adjustY(input: number, mult: number = 1) {
+            return input * controls.view.zoom + controls.view.y * mult;
+        }
+        push();
+        translate(mouseX + 10, mouseY + 10);
+        const x = adjustX(mouseX, -1) - adjustX(width / 2, 1)
+        const y = adjustY(mouseY, -1) - adjustY(height / 2, 1);
+        const tileX = Math.round(x / game.TILE_SIZE);
+        const tileY = Math.round(y / game.TILE_SIZE);
+        drawTextBox({
+            "raw x": mouseX,
+            "raw y": mouseY,
+            "adjusted x": x,
+            "adjusted y": y,
+            tileX,
+            tileY,
+        });
+        pop();
+
+        push();
+        stroke("red");
+        strokeWeight(2);
+        line(adjustX(width / 2), 0, adjustX(width / 2), height);
+        line(0, adjustY(height / 2), width, adjustY(height / 2));
+        pop();
     }
 
     private tileImage(tile: Tile | TileDescriptor): p5.Image;

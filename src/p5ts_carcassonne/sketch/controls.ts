@@ -13,17 +13,18 @@ class Controls {
 
         function mouseDragged(e: MouseEvent) {
             const {prevX, prevY, isDragging} = controls.viewPos;
-            if(!isDragging) return;
+            if (!isDragging) return;
 
             const pos = {x: e.clientX, y: e.clientY};
             const dx = pos.x - prevX!;
             const dy = pos.y - prevY!;
 
-            if(prevX || prevY) {
+            if (prevX || prevY) {
                 controls.view.x += dx;
                 controls.view.y += dy;
                 controls.viewPos.prevX = pos.x;
                 controls.viewPos.prevY = pos.y;
+                controls.log();
             }
         }
 
@@ -58,5 +59,10 @@ class Controls {
         }
 
         return {worldZoom}
+    }
+
+    log() {
+        console.log(controls.view);
+        console.log(controls.viewPos);
     }
 }

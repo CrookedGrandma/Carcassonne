@@ -28,6 +28,7 @@ function csvLinesToDescriptorArray(csv: string[]): TileDescriptor[] {
         river: r[4] == 'true',
         startTile: r[5] == 'true',
         riverEnd: r[6] == 'true',
+        connections: JSON.parse(r[7]),
     }));
 }
 
@@ -40,6 +41,7 @@ function descriptorArrayToTileArray(descriptors: TileDescriptor[]): Tile[] {
                 river: d.river,
                 startTile: d.startTile,
                 riverEnd: d.riverEnd,
+                connections: d.connections,
             });
         }
         return arr;
@@ -138,4 +140,15 @@ function getNeighbouringEdges(pos: Position, gameState: GameState): (EdgeType | 
         const n = ns[i];
         return n ? getEdgeType(n, (i + 2) % 4) : undefined;
     });
+}
+
+function drawTextBox(lines: Record<string, any>) {
+    const entries = Object.entries(lines);
+    fill(255, 128);
+    rect(0, 0, 125, (entries.length + 1) * 15);
+    fill(0);
+    textSize(9);
+    textStyle(NORMAL);
+    noStroke();
+    entries.forEach(([key, value], i) => text(`${key}: ${value}`, 5, (i + 1) * 15));
 }
